@@ -1,7 +1,6 @@
 # 1 Computer Vision and Neural Networks
 - Start with a brief presentation of the CV field and its history
 - Introduce artificial neural networks and explain how they have revolutionized computer vision
-- Implement a neural network from scratch
 
 ## 1.1 Computer Vision in the Wild
 Computer vision can be summarized as the automated extraction of information from digital images The goal of computer vision is to teach computers how to make sense of these pixels the way humans (and other creatures) do, or even better. 
@@ -82,4 +81,5 @@ In order to better understand the current stand of the heart and current challen
 - That same year, Google demonstrated how advances in cloud computing could also be applied to computer vision. Using a dataset of 10 million random images extracted from YouTube videos, they taught a neural network to identify images containing cats and parallelized the training process over 16,000 machines to finally double the accuracy compared to previous methods.
 
 - And so started the deep learning era we are currently in. Everyone jumped on board, coming up with deeper and deeper models, more advanced training schemes, and lighter solutions for portable devices. 
+
 
