@@ -2,7 +2,7 @@
 - Start with a brief presentation of the CV field and its history
 - Introduce artificial neural networks and explain how they have revolutionized computer vision
 
-## 1.1 Computer Vision in the Wild
+## Computer Vision in the Wild
 Computer vision can be summarized as the automated extraction of information from digital images The goal of computer vision is to teach computers how to make sense of these pixels the way humans (and other creatures) do, or even better. 
 ### Main tasks and their applications
 - <strong>Object classification</strong>: The task of assigning proper labels (or classes) to images among a predefined set. Object classification became famous for being the first success story of deep convolutional neural networks being applied to computer vision back in 2012. Common applications are text digitization (using character recognition) and the automatic annotation of image databases. Covered in <strong>Chapter 4</strong>.
@@ -41,7 +41,7 @@ Computer vision can be summarized as the automated extraction of information fro
 
 - <strong>Scene reconstruction</strong>: Scene reconstruction is the task of recovering the 3D geometry of a scene, given one or more images. Advanced methods take several images and match their content together in order to obtain a 3D model of the target scene. This can be applied to the 3D scanning of objects, people, buildings, and so on.
 
-## 1.1 A brief history of computer vision
+## A brief history of computer vision
 In order to better understand the current stand of the heart and current challenges of computer vision, we suggest that we quickly have a look at where it came from and how it has evolved in the past decades.
 
 - Computer vision as a domain started as early as the 60s, a time when they underestimated the complexity of lower animal functions such as <strong>perception</strong>. How these researchers believed they could reproduce human perception through a single summer project in 1966 is a famous anecdote in the computer vision community.
