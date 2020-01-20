@@ -82,3 +82,4 @@ In order to better understand the current stand of the heart and current challen
 - That same year, Google demonstrated how advances in cloud computing could also be applied to computer vision. Using a dataset of 10 million random images extracted from YouTube videos, they taught a neural network to identify images containing cats and parallelized the training process over 16,000 machines to finally double the accuracy compared to previous methods.
 
 - And so started the deep learning era we are currently in. Everyone jumped on board, coming up with deeper and deeper models, more advanced training schemes, and lighter solutions for portable devices. 
+
