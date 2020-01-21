@@ -199,4 +199,3 @@ More info at: https://www.tensorflow.org/tfx
 #### TensorFlow Lite and TensorFlow.js
 The main version of TensorFlow is designed for Windows, Linux, and Mac computers. TensorFlow Lite is designed to run model predictions (inference) on mobile phones and embedded devices. TensorFlow.js (also referred to as tfjs) was developed to empower almost any web browser with deep learning.
 
-
