@@ -94,4 +94,74 @@ The ERF of a network is directly affected by the number of intermediary layers, 
 <strong>Because of the local connectivity of CNNs, you should keep in mind how layers and their hyperparameters will affect the flow of visual information across the networks when defining their architecture.</strong>
 
 ## Refining the Training Process
+Network architectures are not the only things to have improved over the years. The way that networks are trained has also evolved, improving how reliably and quickly they can converge. In this section, we will tackle some of the shortcomings of the gradient descent algorithm, Computer Vision and Neural Networks, as well as some ways to avoid overfitting.
+
+#### Gradient descent challenges
+As we know, the parameters of a neural network can be iteratively updated during training to minimize the loss, L, backpropagating its gradient. 
+
+A very important hyperparameter is the <strong>learning rate</strong>. There are three reasons great care needs to be taking in picking a learning rate:
+
+1) <strong>Training velocity vs model performance</strong>: While setting a high learning rate may allow the trained network to converge faster, it also may prevent the network from finding a proper loss minimum.
+
+    Intuitively, there should be a better solution than trial and error to find the proper learning rate. For instance, a popular solution is to dynamically adjust the learning rate during training, starting with a larger value and decreasing it after every epoch. This process is named learning rate decay. Manual decaying can still be found in many implementations, though, nowadays, TensorFlow offers more advanced learning rate schedulers and optimizers with adaptive learning rates.
+
+2) <strong>Suboptimal local minima</strong>: A common problem when optimizing complex methods is getting stuck in suboptimal local minima. Indeed, gradient descent may lead us to a local minimum it cannot escape, even though a better minimum lies close by.
+
+    Indeed, the gradient descent process cannot ensure the convergence to a global minimum. But, given the complexity of visual tasks and the large number of parameters needed to tackle them, data scientists are usually glad to just find a satisfying local minimum.
+    
+    One possible mitigation is to use SGD; because of the random sampling of training samples (causing the gradients to often differ from one mini-batch to another), the SGD algorithm is already able to jump out of shallow local minima.
+
+3) <strong>A single hyperparameter for heterogeneous parameters</strong>: That is, the same learning rate is used to update all the parameters of the network. However, not all these variables have the same sensitivity to changes, nor do they all impact the loss at every iteration.
+
+    It may seem beneficial to have different learning rates to update crucial parameters more carefully, and to more boldly update parameters that are not contributing often enough to the network's predictions.
+
+#### Advanced optimizers
+Some of the intuitions we presented in the previous paragraphs have been properly studied and formalized by researchers, leading to new optimization algorithms based on SGD. The most common ones include:
+
+- <strong>Momentum algorithms</strong>: The momentum algorithm is based on SGD and inspired by the physics notion of momentum—as long as an object is moving downhill, its speed will increase with each step. Applied to gradient descent, the idea is to take previous parameter updates, vi-1, into account, adding them to the new update terms. If the current and previous steps have the same direction, their magnitudes will add up, accelerating the SGD in this relevant direction. If they have different directions, the momentum will dampen these oscillations. In <em>tf.optimizers</em>, momentum is defined as an optional parameter of SGD:
+
+    ![SGD momentum](../assets/sgd_momentum.PNG)
+
+    This optimizer instance can then be directly passed as a parameter to model.fit() when launching the training through the Keras API. 
+    
+    This SGD API has one interesting Boolean parameter—to switch from the common momentum method to Nesterov's algorithm. Indeed, a major problem of the former method is that by the time the network gets really close to its loss minimum, the accumulated momentum will usually be quite high, which may cause the method to miss or oscillate around the target minimum.
+
+    The Nesterov accelerated gradient (NAG or Nesterov momentum) offers a solution to this problem. Yurii Nesterov's idea was to give the optimizer the possibility to have a look at the slope ahead so that it knows it should slow down if the slope starts going up. More formally, Nesterov suggested directly reusing the past term to estimate which values the parameters would take if we keep following this direction. The gradient is then evaluated with respect to those approximate future parameters, and it is used to finally compute the actual update. 
+
+    This version of the momentum optimizer is more adaptable to gradient changes, and can significantly speed up the gradient descent process.
+
+- <strong>The Ada family</strong>: <em>Adagrad</em>, <em>Adadelta</em>, and <em>Adam</em> are several iterations and variations around the idea of adapting the learning rate depending on the sensitivity and/or activation frequency of each neuron. 
+
+    The </em>Adagrad</em> optimizer uses a neat formula to automatically decrease the learning rate more quickly for parameters linked to commonly found features, and more slowly for infrequent ones. In other words, the more updates a parameter receives, the smaller the updates. This optimization algorithm not only removes the need to manually adapt/decay the learning rate, but it also makes the SGD process more stable, especially for datasets with sparse representations.
+
+    The <em>Adadelta</em> optimizer offered a solution to one problem inherent to Adagrad. As it keeps decaying the learning rate every iteration, at some point, the learning rate becomes too small and the network just cannot learn anymore (except maybe for infrequent parameters). Adadelta avoids this problem by keeping in check the factors used to divide the learning rate for each parameter.
+
+    The <em>Adam</em> optimizer is another iteration, that in addition to storing previous update terms to adapt the learning rate for each parameter, Adam also keeps track of the past momentum values. It is, therefore, often identified as a mix between Adadelta and momentum.
+
+Note that there is no consensus regarding which of these optimizers may be the best. Adam is, however, preferred by many computer vision professionals for its effectiveness on scarce data. <strong>RMSprop</strong> is also often considered a good choice for recurrent neural networks. RMSprop is similar to Adelta, and was also developed to correct Adagrad's flaw
+
+#### Regularization methods
+Efficiently teaching neural networks so that they minimize the loss over training data is, however, not enough. We also need to make sure that the model does not overfit our training set (so it can generalize well to new, unseen data).
+
+For our networks to generalize well, we mentioned that rich training sets (with enough variability to cover possible testing scenarios) and well-defined architectures (neither too shallow to avoid underfitting, nor too complex to prevent overfitting) are key. However, other methods have been developed over the years for regularization:
+
+- <strong>Early stopping</strong>: Neural networks start overfitting when they iterate too many times over the same small set of training samples. Therefore, a straightforward solution to prevent this problem is to figure out the number of training epochs a model needs. The number should be low enough to stop before the network starts overfitting, but still high enough for the network to learn all it can from this training set.
+
+- <strong>L1 and L2 regularization</strong>: Prevents overfitting by modifying the loss in order to include regularization as one of the training objectives. The L1 and L2 regularizers are prime examples of this.
+
+    L2 regularization (also called ridge regularization) compels the network to minimize the sum of its squared parameter values. While this regularization leads to the decay of all parameter values over the optimization process, it more strongly punishes large parameters due to the squared term. Therefore, L2 regularization encourages the network to keep its parameter values low and thus more homogeneously distributed. It prevents the network from developing a small set of parameters with large values influencing its predictions (as it may prevent the network from generalizing).
+
+    On the other hand, the L1 regularizer compels the network to minimize the sum of its absolute parameter values. The difference between this and L2 regularization may seem symbolic at first glance, but their properties are actually quite different. As larger weights are not penalized by squaring, L1 regularization instead makes the network shrink the parameters linked to less important features toward zero. Therefore, it prevents overfitting by forcing the network to ignore less meaningful features. In other words, L1 regularization forces the network to adopt sparse parameters; that is, to rely on a smaller set of non-null parameters. This can be advantageous if the footprint of the network should be minimized (for mobile applications, for example).
+
+- <strong>Dropout</strong>: So far, the regularization methods we have covered are affecting the way networks are trained. Other solutions are affecting their architecture. Dropout is one such method and one of the most popular. Dropout consists of randomly disconnecting (dropping out) some neurons of target layers at every training iteration. This method thus takes a hyperparameter ratio, , which represents the probability that neurons are being turned off at each training step.
+
+    ![Dropout](../assets/dropout.PNG)
+
+    By artificially and randomly impairing the network, this method forces the learning of robust and concurrent features. For instance, as dropout may deactivate the neurons responsible for a key feature, the network has to figure out other significant features in order to reach the same prediction. This has the effect of developing redundant representations of data for prediction.
+
+    Dropout is also often explained as a cheap solution to simultaneously train a multitude of models (the randomly impaired versions of the original network). During the testing phase, dropout is not applied to the network, so the network's predictions can be seen as the combination of the results that the partial models would have provided. Therefore, this information averaging prevents the network from overfitting.
+
+- <strong>Batch normalization</strong>: Like dropout, batch normalization is an operation that can be inserted into neural networks and affects their training. This operation takes the batched results of the preceding layers and normalizes them; that is, it subtracts the batch mean and divides it by the batch standard deviation.
+
+    Since batches are randomly sampled in SGD, this means that the data will almost never be normalized the same way. Therefore, the network has to learn how to deal with these data fluctuations, making it more robust and generic. Furthermore, this normalization step concomitantly improves the way the gradients flow through the network, facilitating the SGD process.
 
