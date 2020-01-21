@@ -42,3 +42,4 @@
 - Covers techniques to reduce inference time, including choosing the right hardware and right libraries, optimizing input size, and optimizing post-processing.
 - Covers how to make a slower model to appear, to the user, as if it were processing in real time, and to reduce the model size.
 - Introduces on-device ML, including how to convert TF and Keras models to a formal that's compatible with on-device DL frameworks.
+

@@ -166,3 +166,37 @@ Once this function is defined, we can launch the training with the Estimator:
 ![Train Estimator](../assets/train_estimator.PNG)
 
 Just like Keras, the training part is very simple, as Estimators handle the heavy lifting.
+
+## TensorFlow Ecosystem
+In addition to the main library, TensorFlow offers numerous tools that are useful for machine learning. While some of them are shipped with TensorFlow, others are grouped under TensorFlow Extended (TFX) and TensorFlow Addons.
+
+#### TensorBoard
+TensorFlow provides a powerful tool for monitoring—TensorBoard. Installed by default with TensorFlow, it is also very easy to use when combined with Keras's callbacks.
+
+By default, TensorFlow will automatically write the loss and the metrics to the folder we specified. We can then launch TensorBoard from the command line. 
+
+As you will see in this book, training a deep learning model requires a lot of fine-tuning. Therefore, it is essential to monitor how your model is performing. TensorBoard allows you to do precisely this. The most common use case is to monitor the evolution of the loss of your model over time. But you can also do the following:
+- Plot any metric (such as accuracy)
+- Display input and output images
+- Display the execution time
+- Draw your model's graph representation
+
+<strong>This section in the book covers more about TensorBoard so I can get into it when I want to know more.</strong>
+
+#### TensorFlow Addons and TensorFlow Extended
+<em>TensorFlow Addons</em> is a collection of extra functionalities gathered into a single repository (https://www.tensorflow.org/addons). It hosts some of the newer advancements in deep learning that are too unstable or not used by enough people to justify adding them to the main TensorFlow library. It also acts as a replacement for tf.contrib, which was removed from TensorFlow 1.
+
+<em>TensorFlow Extended</em> is an end-to-end machine learning platform for TensorFlow. It offers several useful tools:
+- TensorFlow Data Validation: A library for exploring and validating machine learning data. You can use it before even building your model.
+- TensorFlow Transform: A library for preprocessing data. It allows you to make sure training and evaluation data are processed the same way.
+- TensorFlow Model Analysis: A library for evaluating TensorFlow models.
+- TensorFlow Serving: A serving system for machine learning models. Serving is the process of delivering predictions from a model, usually through a REST API.
+
+![Model Lifetime](../assets/model_lifetime.PNG)
+
+More info at: https://www.tensorflow.org/tfx
+
+#### TensorFlow Lite and TensorFlow.js
+The main version of TensorFlow is designed for Windows, Linux, and Mac computers. TensorFlow Lite is designed to run model predictions (inference) on mobile phones and embedded devices. TensorFlow.js (also referred to as tfjs) was developed to empower almost any web browser with deep learning.
+
+
