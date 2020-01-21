@@ -137,3 +137,64 @@ Residual blocks have been a significant contribution to machine learning and com
 The list of CNN architectures presented here does not pretend to be exhaustive. It has been curated to cover solutions both instrumental to the computer vision domain and of pedagogical value. 
 
 As research in visual recognition keeps moving forward at a fast pace, more advanced architectures are being proposed, building upon previous solutions (as Highway and DenseNet methods do for ResNet, for instance), merging them (as with the Inception-ResNet solution), or optimizing them for particular use cases (such as the lighter MobileNet, which was made to run on smartphones). It is, therefore, always a good idea to check what the state of the art has to offer (for example, on official repositories or research journals) before trying to reinvent the wheel.
+
+## Transfer Learning
+
+Most machine learning systems have been designed, so far, for single, specific tasks. Directly applying a trained model to a different dataset would yield poor results, especially if the data samples do not share the same semantic content (for instance, MNIST digit images versus ImageNet photographs) or the same image quality/distribution (for instance, a dataset of smartphone pictures versus a dataset of high-quality pictures). As CNNs are trained to extract and interpret specific features, their performance will be compromised if the feature distribution changes. Therefore, some transformations are necessary to apply networks to new tasks.
+
+Transfer learning is one solution, and has been defined as the situation where what has been learned in one setting is exploited to improve generalization in another setting.
+
+It makes sense for researchers to suppose that, for example, some of the features a CNN is extracting to classify hand-written digits could be partially reused for the classification of hand-written texts. Similarly, a network that learned to detect human faces could be partially repurposed for the evaluation of facial expressions.
+
+Transfer learning is especially interesting when not enough data is available to properly learn the new task (that is, there are not enough image samples to estimate the distribution). .
+
+#### Transferring CNN knowledge
+
+Artificial neural networks have one advantage over human brains that facilitates this operation: they can be easily stored and duplicated.
+
+Transfer learning for CNNs mostly consists of reusing the complete or partial architecture and weights of a performant network trained on a rich dataset to instantiate a new model for a different task. From this conditioned instantiation, the new model can then be fine-tuned; that is, it can be further trained on the available data for the new task/domain.
+
+As we highlighted in the previous chapters, the first layers of a network tend to extract low-level features, whereas final convolutional layers react to more complex notions. For classification tasks, the final pooling and/or fully connected layers then process these high-level feature maps to make their class predictions.
+
+This typical setup and related observations led to various transfer learning strategies. Pretrained CNNs, with their final prediction layers removed, started being used as efficient <strong>feature extractors</strong>. These features can then be processed by one or two new dense layers, which are trained to output the task-related predictions. 
+
+To preserve the quality of the extracted features, the layers of the feature extractors are often frozen during this training phase; that is, their parameters are not updated during the gradient descent. In other cases, when the tasks/domains are less similar, some of the last layers of the feature extractors—or all of them—are fine-tuned; that is, trained along with the new prediction layers on the task data.
+
+#### Use cases
+
+- <strong>Similar tasks with limited training data</strong>: Transfer learning is especially useful when you want to solve a particular task and do not have enough training samples to properly train a performant model, but do have access to a larger and similar training dataset.
+
+    The model can be pretrained on this larger dataset until convergence (or, if available and pertinent, we can fetch an available pretrained model). Then, its final layers should be removed (when the target task is different, that is, its output differs from the pretraining task) and replaced with layers adapted to the target task.
+
+    The new model can finally be prepared for its task by freezing the pretrained layers and by training only the dense ones on top. Since the target training dataset is too small, the model would end up overfitting if we do not freeze its feature extractor component. By fixing these parameters, we make sure that the network keeps the expressiveness it developed on the richer dataset.
+
+-<strong>Similar tasks with abundant training data</strong>: If we have access to a rich enough training set for our application, does it even make sense to use a pretrained model? This question is legitimate if the similarity between the original and target tasks is too low. Pretraining a model, or even downloading pretrained weights, can be costly. However, researchers demonstrated through various experiments that, in most cases, it is better to initialize a network with pretrained weights (even from a dissimilar use case) than with random ones.
+
+-<strong>Dissimilar tasks with limited training data</strong>: In this case, would transfer learning still make sense? In some cases, we can still benefit from transfer learning if we keep in mind that the first layers of CNNs react to low-level features. Instead of only removing the final prediction layers of a pretrained model, we can also remove some of the last convolutional blocks, which are too task-specific. A shallow classifier can then be added on top of the remaining layers, and the new model can finally be fine-tuned.
+
+## Transfer learning in TensorFlow
+
+#### Managing layers
+
+For Sequential models, the list of layers is accessible through the <em>model.layers</em> attribute. This structure has a <em>pop()</em> method, which removes the last layer of the model.
+
+![Remove Layers](../assets/remove_layers.PNG)
+
+In pure TensorFlow, editing an operational graph supporting a model is neither simple nor recommended. Therefore, instead of removing layers, we simply need to pinpoint the last layer/operation of the previous model we want to keep. Keras provides additional methods to simplify this process. Knowing the name of the last layer to keep (for instance, after printing the names with model.summary()), a feature extractor model can be built in a couple of lines: 
+
+![Feature Extractor](../assets/feature_extractor.PNG)
+
+Adding new prediction layers on top of a feature extractor is straightforward, as it is just a matter of adding new layers on top of the corresponding model. For example, this can be done as follows, using the Keras API:
+
+![Grafting Layers](../assets/grafting_layers.PNG)
+
+#### Selective training
+
+Transfer learning makes the training phase a bit more complex because we should first restore the pretrained layers and define which ones should be frozen. With Keras, we can simply restore the pretrained model before its transformation for the new task:
+
+![Loading Model](../assets/loading_model.PNG)
+
+Also, in Keras, layers have a <em>.trainable</em> attribute, which can simply be set to False in order to freeze them:
+
+![Freeze Layers](../assets/freeze_layers.PNG)
+
