@@ -197,4 +197,3 @@ Transfer learning makes the training phase a bit more complex because we should 
 Also, in Keras, layers have a <em>.trainable</em> attribute, which can simply be set to False in order to freeze them:
 
 ![Freeze Layers](../assets/freeze_layers.PNG)
-
